@@ -11,18 +11,17 @@ import {
 import { ComponentPortal, DomPortalOutlet } from '@angular/cdk/portal';
 import { Overlay, OverlayContainer } from '@angular/cdk/overlay';
 import { DOCUMENT } from '@angular/common';
-import { Platform } from '@angular/cdk/platform';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class Popup {
-  private readonly _injector = inject(Injector);
-  private readonly _parentWindowDocument = inject(DOCUMENT);
   private _headObserver!: MutationObserver;
   private _bodyClassAttributeObserver!: MutationObserver;
 
-  constructor(private readonly _externalWindow: Window) {}
+  constructor(
+    private readonly _externalWindow: Window,
+    private readonly _injector: Injector,
+    private readonly _parentWindowDocument: Document
+  ) {}
 
   get externalWindow() {
     return this._externalWindow;
@@ -72,13 +71,11 @@ export class Popup {
       providers: [
         {
           provide: DOCUMENT,
-          useFactory: () => this._externalWindow.document,
+          useValue: this._externalWindow.document,
         },
         {
           provide: OverlayContainer,
-          useFactory: (document: any, platform: Platform): OverlayContainer =>
-            new OverlayContainer(document, platform),
-          deps: [DOCUMENT, Platform],
+          useClass: OverlayContainer
         },
         {
           provide: Overlay,
@@ -115,7 +112,7 @@ export class Popup {
       for (let mutation of mutations) {
         if (mutation.type === 'childList') {
           mutation.addedNodes.forEach((node) =>
-            this._externalWindow.document.head.appendChild(node.cloneNode(true))
+            this._externalWindow.document.head.appendChild(node)
           );
         }
       }

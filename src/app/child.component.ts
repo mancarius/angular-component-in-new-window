@@ -1,12 +1,19 @@
-import { Component } from '@angular/core';
+import { Component, ViewEncapsulation, input } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-child',
   standalone: true,
-  imports: [MatTooltipModule],
+  encapsulation: ViewEncapsulation.ShadowDom,
+  imports: [MatTooltipModule, MatButtonModule],
   template: `
-    <p matTooltip="Hello from material tootip">Hello popup</p>
+    <button mat-raised-button color="primary"
+      matTooltip="Info about the action"
+      aria-label="Button that displays a tooltip when focused or hovered over"
+    >{{ btnLabel() }}</button>
   `,
 })
-export class ChildComponent {}
+export class ChildComponent {
+  btnLabel = input.required<string>();
+}

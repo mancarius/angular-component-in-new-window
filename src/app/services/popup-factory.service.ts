@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, Injector, inject } from '@angular/core';
 import { Popup } from './popup.service';
 import { DOCUMENT } from '@angular/common';
 
@@ -7,6 +7,7 @@ import { DOCUMENT } from '@angular/common';
 })
 export class PopupFactory {
   private readonly _document = inject(DOCUMENT);
+  private readonly _injector = inject(Injector);
 
   open(): Popup {
     const newWindow = this._openNewWindow();
@@ -21,7 +22,7 @@ export class PopupFactory {
 
     this._copyBodyClasses(window);
 
-    return new Popup(newWindow);
+    return new Popup(newWindow, this._injector, this._document);
   }
 
   private _openNewWindow(): Window | null {
